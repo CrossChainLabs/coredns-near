@@ -2,11 +2,12 @@ package near
 
 import (
 	"fmt"
+	"strings"
+
 	nearclient "github.com/CrossChainLabs/go-nearclient"
 	"github.com/coredns/caddy"
 	"github.com/coredns/coredns/core/dnsserver"
 	"github.com/coredns/coredns/plugin"
-	"strings"
 )
 
 // init registers this plugin.
@@ -22,9 +23,7 @@ func setup(c *caddy.Controller) error {
 	fmt.Println("ipfsGatewayAs", ipfsGatewayAs)
 	fmt.Println("ipfsGatewayAAAAs", ipfsGatewayAAAAs)
 
-	connection, nearLinkNameServers, ipfsGatewayAs, ipfsGatewayAAAAs, err := nearParse(c)
 	if err != nil {
-		log.Warnf("setupNEAR error %s", err)
 		return plugin.Error("near", err)
 	}
 
