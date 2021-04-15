@@ -6,14 +6,16 @@ package near
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"strings"
+	"time"
+
 	nearclient "github.com/CrossChainLabs/go-nearclient"
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/request"
 	"github.com/labstack/gommon/log"
 	"github.com/miekg/dns"
-	"strings"
-	"time"
 )
 
 var emptyContentHash = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
@@ -257,7 +259,17 @@ func (e NEAR) handleAAAA(name string, domain string, contentHash []byte) ([]dns.
 
 // ServeDNS implements the plugin.Handler interface.
 func (e NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
-	fmt.Println("near 2")
+	fmt.Println("NEAR RPC")
+
+	resp, err := e.Client.FunctionCall("dev-1588039999690", "get_num", "e30=")
+	var res []int
+
+	if err := json.Unmarshal(resp.Result, &res); err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println("near result:", res, "logs:", resp.Logs, "err:", err)
+
 	state := request.Request{W: w, Req: r}
 
 	a := new(dns.Msg)
