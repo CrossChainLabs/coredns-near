@@ -31,7 +31,7 @@ func TestExample(t *testing.T) {
 
 	// Call our plugin directly, and check the result.
 	x.ServeDNS(ctx, rec, r)
-	if a := b.String(); !strings.Contains(a, "[INFO] plugin/example: example") {
-		t.Errorf("Failed to print '%s', got %s", "[INFO] plugin/example: example", a)
+	if a := b.String(); !strings.Contains(a, "example 1") {
+		t.Errorf("Failed to print '%s', got %s", "example 1", a)
 	}
 }

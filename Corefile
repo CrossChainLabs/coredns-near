@@ -1,4 +1,26 @@
 . {
   forward . 9.9.9.9
-  example
+  example {
+    # connection is ta URL to an NEAR RPC. 
+    connection https://rpc.testnet.near.org
+
+    # nearlinknameservers are the names of the nameservers that serve
+    # NEARLink domains.  This will usually be the name of this server,
+    # plus potentially one or more others.
+    nearlinknameservers ns1.neardns.xyz ns2.neardns.xyz
+
+    # ipfsgatewaya is the address of an IPFS gateway.
+    # This value is returned when a request for an A record of an NEARlink
+    # domain is received and the domain has a contenthash record in NEAR but
+    # no A record.  Multiple values can be supplied, separated by a space,
+    # in which case all records will be returned.
+    ipfsgatewaya 176.9.154.81
+
+    # ipfsgatewayaaaa is the address of an IPFS gateway.
+    # This value is returned when a request for an AAAA record of an NEARlink
+    # domain is received and the domain has a contenthash record in NEAR but
+    # no A record.  Multiple values can be supplied, separated by a space,
+    # in which case all records will be returned.
+    ipfsgatewayaaaa 2a01:4f8:160:4069::2
+  }
 }
