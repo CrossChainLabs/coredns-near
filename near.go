@@ -30,7 +30,7 @@ type NEAR struct {
 }
 
 // IsAuthoritative checks if the NEAR plugin is authoritative for a given domain
-func (e NEAR) IsAuthoritative(domain string) bool {
+func (n NEAR) IsAuthoritative(domain string) bool {
 	// TODO : check if is near.link
 
 	return true
@@ -38,14 +38,14 @@ func (e NEAR) IsAuthoritative(domain string) bool {
 
 // HasRecords checks if there are any records for a specific domain and name.
 // This is used for wildcard eligibility
-func (e NEAR) HasRecords(domain string, name string) (bool, error) {
+func (n NEAR) HasRecords(domain string, name string) (bool, error) {
 	// TODO
 
 	return true, nil
 }
 
 // Query queries a given domain/name/resource combination
-func (e NEAR) Query(domain string, name string, qtype uint16, do bool) ([]dns.RR, error) {
+func (n NEAR) Query(domain string, name string, qtype uint16, do bool) ([]dns.RR, error) {
 	log.Debugf("request type %d for name %s in domain %v", qtype, name, domain)
 
 	results := make([]dns.RR, 0)
@@ -59,25 +59,25 @@ func (e NEAR) Query(domain string, name string, qtype uint16, do bool) ([]dns.RR
 		qtype == dns.TypeTXT ||
 		qtype == dns.TypeA ||
 		qtype == dns.TypeAAAA {
-		contentHash, err = e.obtainContentHash(name, domain)
+		contentHash, err = n.obtainContentHash(name, domain)
 		hasContentHash = err == nil && bytes.Compare(contentHash, emptyContentHash) > 0
 	}
 	if hasContentHash {
 		switch qtype {
 		case dns.TypeSOA:
-			results, err = e.handleSOA(name, domain, contentHash)
+			results, err = n.handleSOA(name, domain, contentHash)
 		case dns.TypeNS:
-			results, err = e.handleNS(name, domain, contentHash)
+			results, err = n.handleNS(name, domain, contentHash)
 		case dns.TypeTXT:
-			results, err = e.handleTXT(name, domain, contentHash)
+			results, err = n.handleTXT(name, domain, contentHash)
 		case dns.TypeA:
-			results, err = e.handleA(name, domain, contentHash)
+			results, err = n.handleA(name, domain, contentHash)
 		case dns.TypeAAAA:
-			results, err = e.handleAAAA(name, domain, contentHash)
+			results, err = n.handleAAAA(name, domain, contentHash)
 		}
 	} /*else {
 		ethDomain := strings.TrimSuffix(domain, ".")
-		resolver, err := e.getDNSResolver(ethDomain)
+		resolver, err := n.getDNSResolver(ethDomain)
 		if err != nil {
 			return results, nil
 		}
@@ -100,14 +100,14 @@ func (e NEAR) Query(domain string, name string, qtype uint16, do bool) ([]dns.RR
 	return results, nil
 }
 
-func (e NEAR) handleSOA(name string, domain string, contentHash []byte) ([]dns.RR, error) {
+func (n NEAR) handleSOA(name string, domain string, contentHash []byte) ([]dns.RR, error) {
 	results := make([]dns.RR, 0)
-	if len(e.NEARLinkNameServers) > 0 {
+	if len(n.NEARLinkNameServers) > 0 {
 		// Create a synthetic SOA record
 		now := time.Now()
 		ser := ((now.Hour()*3600 + now.Minute()) * 100) / 86400
 		dateStr := fmt.Sprintf("%04d%02d%02d%02d", now.Year(), now.Month(), now.Day(), ser)
-		result, err := dns.NewRR(fmt.Sprintf("%s 10800 IN SOA %s hostmaster.%s %s 3600 600 1209600 300", e.NEARLinkNameServers[0], name, name, dateStr))
+		result, err := dns.NewRR(fmt.Sprintf("%s 10800 IN SOA %s hostmaster.%s %s 3600 600 1209600 300", n.NEARLinkNameServers[0], name, name, dateStr))
 		if err != nil {
 			return results, err
 		}
@@ -116,9 +116,9 @@ func (e NEAR) handleSOA(name string, domain string, contentHash []byte) ([]dns.R
 	return results, nil
 }
 
-func (e NEAR) handleNS(name string, domain string, contentHash []byte) ([]dns.RR, error) {
+func (n NEAR) handleNS(name string, domain string, contentHash []byte) ([]dns.RR, error) {
 	results := make([]dns.RR, 0)
-	for _, nameserver := range e.NEARLinkNameServers {
+	for _, nameserver := range n.NEARLinkNameServers {
 		result, err := dns.NewRR(fmt.Sprintf("%s 3600 IN NS %s", domain, nameserver))
 		if err != nil {
 			return results, err
@@ -129,9 +129,9 @@ func (e NEAR) handleNS(name string, domain string, contentHash []byte) ([]dns.RR
 	return results, nil
 }
 
-func (e NEAR) handleTXT(name string, domain string, contentHash []byte) ([]dns.RR, error) {
+func (n NEAR) handleTXT(name string, domain string, contentHash []byte) ([]dns.RR, error) {
 	results := make([]dns.RR, 0)
-	txtRRSet, err := e.obtainTXTRRSet(name, domain)
+	txtRRSet, err := n.obtainTXTRRSet(name, domain)
 	if err == nil && len(txtRRSet) != 0 {
 		// We have a TXT rrset; use it
 		offset := 0
@@ -146,7 +146,7 @@ func (e NEAR) handleTXT(name string, domain string, contentHash []byte) ([]dns.R
 
 	/*if isRealOnChainDomain(name, domain) {
 		ethDomain := strings.TrimSuffix(domain, ".")
-		resolver, err := e.getResolver(ethDomain)
+		resolver, err := n.getResolver(ethDomain)
 		if err != nil {
 			log.Warnf("error obtaining resolver for %s: %v", ethDomain, err)
 			return results, nil
@@ -202,10 +202,10 @@ func (e NEAR) handleTXT(name string, domain string, contentHash []byte) ([]dns.R
 	return results, nil
 }
 
-func (e NEAR) handleA(name string, domain string, contentHash []byte) ([]dns.RR, error) {
+func (n NEAR) handleA(name string, domain string, contentHash []byte) ([]dns.RR, error) {
 	results := make([]dns.RR, 0)
 
-	aRRSet, err := e.obtainARRSet(name, domain)
+	aRRSet, err := n.obtainARRSet(name, domain)
 	if err == nil && len(aRRSet) != 0 {
 		// We have an A rrset; use it
 		offset := 0
@@ -218,8 +218,8 @@ func (e NEAR) handleA(name string, domain string, contentHash []byte) ([]dns.RR,
 		}
 	} else {
 		// We have a content hash but no A record; use the default
-		for i := range e.IPFSGatewayAs {
-			result, err := dns.NewRR(fmt.Sprintf("%s 3600 IN A %s", name, e.IPFSGatewayAs[i]))
+		for i := range n.IPFSGatewayAs {
+			result, err := dns.NewRR(fmt.Sprintf("%s 3600 IN A %s", name, n.IPFSGatewayAs[i]))
 			if err != nil {
 				return results, err
 			}
@@ -230,10 +230,10 @@ func (e NEAR) handleA(name string, domain string, contentHash []byte) ([]dns.RR,
 	return results, nil
 }
 
-func (e NEAR) handleAAAA(name string, domain string, contentHash []byte) ([]dns.RR, error) {
+func (n NEAR) handleAAAA(name string, domain string, contentHash []byte) ([]dns.RR, error) {
 	results := make([]dns.RR, 0)
 
-	aaaaRRSet, err := e.obtainAAAARRSet(name, domain)
+	aaaaRRSet, err := n.obtainAAAARRSet(name, domain)
 	if err == nil && len(aaaaRRSet) != 0 {
 		// We have an AAAA rrset; use it
 		offset := 0
@@ -246,8 +246,8 @@ func (e NEAR) handleAAAA(name string, domain string, contentHash []byte) ([]dns.
 		}
 	} else {
 		// We have a content hash but no AAAA record; use the default
-		for i := range e.IPFSGatewayAAAAs {
-			result, err := dns.NewRR(fmt.Sprintf("%s 3600 IN AAAA %s", name, e.IPFSGatewayAAAAs[i]))
+		for i := range n.IPFSGatewayAAAAs {
+			result, err := dns.NewRR(fmt.Sprintf("%s 3600 IN AAAA %s", name, n.IPFSGatewayAAAAs[i]))
 			if err != nil {
 				log.Warnf("error creating %s AAAA RR: %v", name, err)
 			}
@@ -258,10 +258,10 @@ func (e NEAR) handleAAAA(name string, domain string, contentHash []byte) ([]dns.
 }
 
 // ServeDNS implements the plugin.Handler interface.
-func (e NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
+func (n NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	fmt.Println("NEAR RPC")
 
-	resp, err := e.Client.FunctionCall("dev-1588039999690", "get_num", "e30=")
+	resp, err := n.Client.FunctionCall("dev-1588039999690", "get_num", "e30=")
 	var res []int
 
 	if err := json.Unmarshal(resp.Result, &res); err != nil {
@@ -277,19 +277,19 @@ func (e NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (i
 	a.Compress = true
 	a.Authoritative = true
 	var result Result
-	a.Answer, a.Ns, a.Extra, result = Lookup(e, state)
+	a.Answer, a.Ns, a.Extra, result = Lookup(n, state)
 	switch result {
 	case Success:
 		state.SizeAndDo(a)
 		w.WriteMsg(a)
 		return dns.RcodeSuccess, nil
 	case NoData:
-		if e.Next == nil {
+		if n.Next == nil {
 			state.SizeAndDo(a)
 			w.WriteMsg(a)
 			return dns.RcodeSuccess, nil
 		}
-		return plugin.NextOrFailure(e.Name(), e.Next, ctx, w, r)
+		return plugin.NextOrFailure(n.Name(), n.Next, ctx, w, r)
 	case NameError:
 		a.Rcode = dns.RcodeNameError
 	case ServerFailure:
@@ -300,28 +300,28 @@ func (e NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (i
 
 }
 
-func (e NEAR) obtainARRSet(name string, domain string) ([]byte, error) {
+func (n NEAR) obtainARRSet(name string, domain string) ([]byte, error) {
 	//nearDomain := strings.TrimSuffix(domain, ".")
 
 	//return Record(name, dns.TypeA)
 	return []byte{}, nil
 }
 
-func (e NEAR) obtainAAAARRSet(name string, domain string) ([]byte, error) {
+func (n NEAR) obtainAAAARRSet(name string, domain string) ([]byte, error) {
 	//nearDomain := strings.TrimSuffix(domain, ".")
 
 	//return Record(name, dns.TypeAAAA)
 	return []byte{}, nil
 }
 
-func (e NEAR) obtainContentHash(name string, domain string) ([]byte, error) {
+func (n NEAR) obtainContentHash(name string, domain string) ([]byte, error) {
 	//nearDomain := strings.TrimSuffix(domain, ".")
 
 	//Contenthash()
 	return []byte{}, nil
 }
 
-func (e NEAR) obtainTXTRRSet(name string, domain string) ([]byte, error) {
+func (n NEAR) obtainTXTRRSet(name string, domain string) ([]byte, error) {
 	//nearDomain := strings.TrimSuffix(domain, ".")
 
 	//return Record(name, dns.TypeTXT)
@@ -333,9 +333,9 @@ func isRealOnChainDomain(name string, domain string) bool {
 }
 
 // Name implements the Handler interface.
-func (e NEAR) Name() string { return "near" }
+func (n NEAR) Name() string { return "near" }
 
-func (e NEAR) Ready() bool { return true }
+func (n NEAR) Ready() bool { return true }
 
 // isRealOnChainDomain will return true if the name requested
 // is also the domain, which implies the entry has an on-chain
@@ -345,7 +345,7 @@ func (e NEAR) Ready() bool { return true }
 /*
 // ServeDNS implements the plugin.Handler interface. This method gets called when near is used
 // in a Server.
-func (e NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
+func (n NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	fmt.Println("near 1")
 
 	// Call next plugin (if any).
@@ -353,7 +353,7 @@ func (e NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (i
 }
 
 // Name implements the Handler interface.
-func (e NEAR) Name() string { return "near" }
+func (n NEAR) Name() string { return "near" }
 
-func (e NEAR) Ready() bool { return true }
+func (n NEAR) Ready() bool { return true }
 */
