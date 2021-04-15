@@ -1,4 +1,4 @@
-// Package whoami implements a plugin that returns details about the resolving
+// Package simple implements a plugin that returns details about the resolving
 // querying it.
 package simple
 
@@ -12,12 +12,12 @@ import (
 	"github.com/miekg/dns"
 )
 
-// Whoami is a plugin that returns your IP address, port and the protocol used for connecting
+// Simple is a plugin that returns your IP address, port and the protocol used for connecting
 // to CoreDNS.
-type Whoami struct{}
+type Simple struct{}
 
 // ServeDNS implements the plugin.Handler interface.
-func (wh Whoami) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
+func (wh Simple) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	state := request.Request{W: w, Req: r}
 
 	a := new(dns.Msg)
@@ -55,4 +55,4 @@ func (wh Whoami) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg)
 }
 
 // Name implements the Handler interface.
-func (wh Whoami) Name() string { return "whoami" }
+func (wh Simple) Name() string { return "simple" }

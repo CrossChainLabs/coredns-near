@@ -8,6 +8,6 @@ import (
 
 // Fuzz fuzzes cache.
 func Fuzz(data []byte) int {
-	w := Whoami{}
+	w := Simple{}
 	return fuzz.Do(w, data)
 }

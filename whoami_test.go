@@ -11,7 +11,7 @@ import (
 )
 
 func TestWhoami(t *testing.T) {
-	wh := Whoami{}
+	wh := Simple{}
 
 	tests := []struct {
 		qname         string

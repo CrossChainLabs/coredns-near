@@ -8,20 +8,20 @@ import (
 )
 
 func init() {
-	caddy.RegisterPlugin("whoami", caddy.Plugin{
+	caddy.RegisterPlugin("simple", caddy.Plugin{
 		ServerType: "dns",
 		Action:     setup,
 	})
 }
 
 func setup(c *caddy.Controller) error {
-	c.Next() // 'whoami'
+	c.Next() // 'simple'
 	if c.NextArg() {
-		return plugin.Error("whoami", c.ArgErr())
+		return plugin.Error("simple", c.ArgErr())
 	}
 
 	dnsserver.GetConfig(c).AddPlugin(func(next plugin.Handler) plugin.Handler {
-		return Whoami{}
+		return Simple{}
 	})
 
 	return nil
