@@ -271,6 +271,7 @@ func (n NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (i
 	fmt.Println("near result:", res, "logs:", resp.Logs, "err:", err)
 
 	state := request.Request{W: w, Req: r}
+	fmt.Println("state: %+v", state)
 
 	a := new(dns.Msg)
 	a.SetReply(r)

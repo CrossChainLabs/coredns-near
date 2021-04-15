@@ -1,5 +1,10 @@
 . {
-  forward . 9.9.9.9
+  rewrite stop {
+    # This rewrites any requests for *.near.link domains to *.near internally
+    # prior to being processed by the main near resolver.
+    name regex (.*)\.near\.link {1}.near
+    answer name (.*)\.near {1}.near.link
+  }
   near {
     # connection is ta URL to an NEAR RPC. 
     connection https://rpc.testnet.near.org
@@ -23,4 +28,11 @@
     # in which case all records will be returned.
     ipfsgatewayaaaa 2a01:4f8:160:4069::2
   }
+
+  # This enables DNS forwarding.  It should only be enabled if this DNS server
+  # is not exposed to the internet, otherwise it becomes an open DNS server and
+  # will be flooded with attack packets.
+  # forward . 8.8.8.8
+
+  errors
 }
