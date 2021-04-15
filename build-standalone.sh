@@ -20,7 +20,7 @@ echo "Patching plugin config..."
 ed plugin.cfg <<EOED
 /rewrite:rewrite
 a
-example:github.com/CrossChainLabs/coredns-simple
+near:github.com/CrossChainLabs/coredns-simple
 .
 w
 q

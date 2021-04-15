@@ -1,6 +1,6 @@
 . {
   forward . 9.9.9.9
-  example {
+  near {
     # connection is ta URL to an NEAR RPC. 
     connection https://rpc.testnet.near.org
 

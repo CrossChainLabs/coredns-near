@@ -1,6 +1,6 @@
-// Package example is a CoreDNS plugin that prints "example" to stdout on every packet received.
+// Package near is a CoreDNS plugin that prints "near" to stdout on every packet received.
 //
-// It serves as an example CoreDNS plugin with numerous code comments.
+// It serves as an near CoreDNS plugin with numerous code comments.
 package near
 
 import (
@@ -11,7 +11,7 @@ import (
 	"github.com/miekg/dns"
 )
 
-// NEAR is an example plugin to show how to write a plugin.
+// NEAR is an near plugin to show how to write a plugin.
 type NEAR struct {
 	Next                plugin.Handler
 	Client              *nearclient.Client
@@ -20,16 +20,16 @@ type NEAR struct {
 	IPFSGatewayAAAAs    []string
 }
 
-// ServeDNS implements the plugin.Handler interface. This method gets called when example is used
+// ServeDNS implements the plugin.Handler interface. This method gets called when near is used
 // in a Server.
 func (e NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
-	fmt.Println("example 1")
+	fmt.Println("near 1")
 
 	// Call next plugin (if any).
 	return dns.RcodeServerFailure, nil
 }
 
 // Name implements the Handler interface.
-func (e NEAR) Name() string { return "example" }
+func (e NEAR) Name() string { return "near" }
 
 func (e NEAR) Ready() bool { return true }
