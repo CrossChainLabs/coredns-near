@@ -23,7 +23,7 @@ func (e Example) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg)
 	fmt.Println("example 1")
 
 	// Call next plugin (if any).
-	return 0, nil
+	return dns.RcodeServerFailure, nil
 }
 
 // Name implements the Handler interface.
