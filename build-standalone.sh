@@ -27,8 +27,8 @@ q
 EOED
 
 echo "Building with plugin..."
-make
-#make SHELL='sh -x' CGO_ENABLED=1 coredns
+#make
+make SHELL='sh -x' CGO_ENABLED=1 coredns
 
 cp coredns ${SRCDIR}
 #chmod -R 755 .git
