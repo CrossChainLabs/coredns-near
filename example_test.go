@@ -1,4 +1,4 @@
-package example
+package near
 
 import (
 	"bytes"
@@ -14,8 +14,8 @@ import (
 )
 
 func TestExample(t *testing.T) {
-	// Create a new Example Plugin. Use the test.ErrorHandler as the next plugin.
-	x := Example{Next: test.ErrorHandler()}
+	// Create a new NEAR Plugin. Use the test.ErrorHandler as the next plugin.
+	x := NEAR{Next: test.ErrorHandler()}
 
 	// Setup a new output buffer that is *not* standard output, so we can check if
 	// example is really being printed.

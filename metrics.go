@@ -1,4 +1,4 @@
-package example
+package near
 
 import (
 	"sync"
