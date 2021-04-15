@@ -1,6 +1,7 @@
 package near
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/coredns/coredns/request"
@@ -80,6 +81,8 @@ func Lookup(server Server, state request.Request) ([]dns.RR, []dns.RR, []dns.RR,
 	authorityRrs := make([]dns.RR, 0)
 	additionalRrs := make([]dns.RR, 0)
 
+	fmt.Println("Lookup: qtype = ", qtype)
+
 	// Work out the domain against which to query
 	name := strings.ToLower(state.Name())
 	if !strings.HasSuffix(name, ".") {
@@ -88,6 +91,7 @@ func Lookup(server Server, state request.Request) ([]dns.RR, []dns.RR, []dns.RR,
 	domain := highestAuthoritativeDomain(server, name)
 	if domain == "" {
 		// We aren't authoritative for anything here
+		fmt.Println("Lookup: We aren't authoritative for anything here")
 		return nil, nil, nil, NoData
 	}
 
