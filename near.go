@@ -46,7 +46,7 @@ func (n NEAR) HasRecords(domain string, name string) (bool, error) {
 
 // Query queries a given domain/name/resource combination
 func (n NEAR) Query(domain string, name string, qtype uint16, do bool) ([]dns.RR, error) {
-	log.Debugf("request type %d for name %s in domain %v", qtype, name, domain)
+	fmt.Println("Query: request type %d for name %s in domain %v", qtype, name, domain)
 
 	results := make([]dns.RR, 0)
 

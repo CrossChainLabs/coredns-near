@@ -97,9 +97,12 @@ func Lookup(server Server, state request.Request) ([]dns.RR, []dns.RR, []dns.RR,
 
 	// Look up parents of this name up to the domain to see if there are
 	// any DNAME records. If so we take the first matching
+	fmt.Println("Lookup: name = ", name)
+
 	dnameName := name
 	for {
 		if dnameName == domain {
+			fmt.Println("Lookup: dnameName == domain")
 			break
 		}
 		dnameRrs, err := server.Query(domain, dnameName, dns.TypeDNAME, do)
