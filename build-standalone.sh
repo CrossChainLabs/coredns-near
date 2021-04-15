@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-rm coredns
-
 SRCDIR=`pwd`
 BUILDDIR=`pwd`/build
 
