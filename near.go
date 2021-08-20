@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 
 	nearclient "github.com/CrossChainLabs/go-nearclient"
@@ -50,7 +49,6 @@ func (n NEAR) Query(domain string, name string, qtype uint16, do bool) ([]dns.RR
 
 	results := make([]dns.RR, 0)
 
-	// If the requested domain has a content hash we alter a number of the records returned
 	var contentHash []byte
 	hasContentHash := false
 	var err error
@@ -75,27 +73,7 @@ func (n NEAR) Query(domain string, name string, qtype uint16, do bool) ([]dns.RR
 		case dns.TypeAAAA:
 			results, err = n.handleAAAA(name, domain, contentHash)
 		}
-	} /*else {
-		ethDomain := strings.TrimSuffix(domain, ".")
-		resolver, err := n.getDNSResolver(ethDomain)
-		if err != nil {
-			return results, nil
-		}
-
-		data, err := resolver.Record(name, qtype)
-		if err != nil {
-			return results, err
-		}
-
-		offset := 0
-		for offset < len(data) {
-			var result dns.RR
-			result, offset, err = dns.UnpackRR(data, offset)
-			if err == nil {
-				results = append(results, result)
-			}
-		}
-	}*/
+	}
 
 	return results, nil
 }
@@ -144,60 +122,22 @@ func (n NEAR) handleTXT(name string, domain string, contentHash []byte) ([]dns.R
 		}
 	}
 
-	/*if isRealOnChainDomain(name, domain) {
-		ethDomain := strings.TrimSuffix(domain, ".")
-		resolver, err := n.getResolver(ethDomain)
-		if err != nil {
-			log.Warnf("error obtaining resolver for %s: %v", ethDomain, err)
-			return results, nil
-		}
-
-		address, err := resolver.Address()
-		if err != nil {
-			if err.Error() != "abi: unmarshalling empty output" {
-				return results, err
-			}
-			return results, nil
-		}
-
-		if address != ens.UnknownAddress {
-			result, err := dns.NewRR(fmt.Sprintf("%s 3600 IN TXT \"a=%s\"", name, address.Hex()))
-			if err != nil {
-				return results, err
-			}
-			results = append(results, result)
-		}
-
-		result, err := dns.NewRR(fmt.Sprintf("%s 3600 IN TXT \"contenthash=0x%x\"", name, contentHash))
-		if err != nil {
-			return results, err
-		}
-		results = append(results, result)
-
-		// Also provide dnslink for compatibility with older IPFS gateways
-		contentHashStr, err := ens.ContenthashToString(contentHash)
-		if err != nil {
-			return results, err
-		}
-		result, err = dns.NewRR(fmt.Sprintf("%s 3600 IN TXT \"dnslink=%s\"", name, contentHashStr))
-		if err != nil {
-			return results, nil
-		}
-		results = append(results, result)
-	} else */
-
-	if isRealOnChainDomain(strings.TrimPrefix(name, "_dnslink."), domain) {
-		// This is a request to _dnslink.<domain>, return the DNS link record.
-		/*contentHashStr, err := ens.ContenthashToString(contentHash)
-		if err != nil {
-			return results, err
-		}
-		result, err := dns.NewRR(fmt.Sprintf("%s 3600 IN TXT \"dnslink=%s\"", name, contentHashStr))
-		if err != nil {
-			return results, err
-		}
-		results = append(results, result)*/
+	result, err := dns.NewRR(fmt.Sprintf("%s 3600 IN TXT \"contenthash=0x%x\"", name, contentHash))
+	if err != nil {
+		return results, err
 	}
+	results = append(results, result)
+
+	// Also provide dnslink for compatibility with older IPFS gateways
+	/*contentHashStr, err := ens.ContenthashToString(contentHash)
+	if err != nil {
+		return results, err
+	}
+	result, err = dns.NewRR(fmt.Sprintf("%s 3600 IN TXT \"dnslink=%s\"", name, contentHashStr))
+	if err != nil {
+		return results, nil
+	}
+	results = append(results, result)*/
 
 	return results, nil
 }
@@ -305,43 +245,39 @@ func (n NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (i
 func (n NEAR) obtainARRSet(name string, domain string) ([]byte, error) {
 	//nearDomain := strings.TrimSuffix(domain, ".")
 
-	//return Record(name, dns.TypeA)
+	//return n.getA(name)
+
 	return []byte{}, nil
 }
 
 func (n NEAR) obtainAAAARRSet(name string, domain string) ([]byte, error) {
 	//nearDomain := strings.TrimSuffix(domain, ".")
 
-	//return Record(name, dns.TypeAAAA)
+	//return n.getAAAA(name)
+
 	return []byte{}, nil
 }
 
 func (n NEAR) obtainContentHash(name string, domain string) ([]byte, error) {
 	//nearDomain := strings.TrimSuffix(domain, ".")
 
-	//Contenthash()
+	//return n.getContentHash(name)
+
 	return []byte{}, nil
 }
 
 func (n NEAR) obtainTXTRRSet(name string, domain string) ([]byte, error) {
 	//nearDomain := strings.TrimSuffix(domain, ".")
 
-	//return Record(name, dns.TypeTXT)
-	return []byte{}, nil
-}
+	//return n.getTXT(name)
 
-func isRealOnChainDomain(name string, domain string) bool {
-	return name == domain
+	return []byte{}, nil
 }
 
 // Name implements the Handler interface.
 func (n NEAR) Name() string { return "near" }
 
 func (n NEAR) Ready() bool { return true }
-
-// isRealOnChainDomain will return true if the name requested
-// is also the domain, which implies the entry has an on-chain
-// presence
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 /*
