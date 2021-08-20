@@ -45,7 +45,7 @@ func (n NEAR) HasRecords(domain string, name string) (bool, error) {
 
 // Query queries a given domain/name/resource combination
 func (n NEAR) Query(domain string, name string, qtype uint16, do bool) ([]dns.RR, error) {
-	fmt.Println("Query: request type %d for name %s in domain %v", qtype, name, domain)
+	fmt.Println("Query: request type, name, domain:", qtype, name, domain)
 
 	results := make([]dns.RR, 0)
 
@@ -75,7 +75,7 @@ func (n NEAR) Query(domain string, name string, qtype uint16, do bool) ([]dns.RR
 		}
 	}
 
-	return results, nil
+	return results, err
 }
 
 func (n NEAR) handleSOA(name string, domain string, contentHash []byte) ([]dns.RR, error) {
