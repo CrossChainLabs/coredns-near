@@ -122,7 +122,7 @@ func (n NEAR) handleTXT(name string, domain string, contentHash []byte) ([]dns.R
 		}
 	}
 
-	result, err := dns.NewRR(fmt.Sprintf("%s 3600 IN TXT \"contenthash=0x%x\"", name, contentHash))
+	result, err := dns.NewRR(fmt.Sprintf("%s 3600 IN TXT \"contenthash=0x%s\"", name, contentHash))
 	if err != nil {
 		return results, err
 	}
