@@ -261,7 +261,7 @@ func (n NEAR) obtainAAAARRSet(name string, domain string) ([]byte, error) {
 func (n NEAR) obtainContentHash(name string, domain string) ([]byte, error) {
 	//nearDomain := strings.TrimSuffix(domain, ".")
 
-	s := "0xe501017000117777772e7765616c64746563682e657468"
+	s := "f01701220c3c4733ec8affd06cf9e9ff50ffc6bcd2ec85a6170004bb709669c31de94391a"
 
 	return []byte(s), nil
 
