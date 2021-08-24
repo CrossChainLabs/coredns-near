@@ -202,7 +202,7 @@ func Lookup(server Server, state request.Request) ([]dns.RR, []dns.RR, []dns.RR,
 
 	// If we aren't asking for a CNAME then check for one to see if we need
 	// to recurse
-	if qtype != dns.TypeCNAME {
+	/*if qtype != dns.TypeCNAME {
 		cnameRrs, err := server.Query(domain, name, dns.TypeCNAME, do)
 		if err != nil {
 			return nil, nil, nil, ServerFailure
@@ -225,7 +225,7 @@ func Lookup(server Server, state request.Request) ([]dns.RR, []dns.RR, []dns.RR,
 			}
 			return answerRrs, authorityRrs, additionalRrs, cnameResult
 		}
-	}
+	}*/
 	// Fetch actual answer record(s)
 	rrs, err := server.Query(domain, name, qtype, do)
 	if err != nil {
