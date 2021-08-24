@@ -99,7 +99,7 @@ func Lookup(server Server, state request.Request) ([]dns.RR, []dns.RR, []dns.RR,
 	// any DNAME records. If so we take the first matching
 	fmt.Println("Lookup: name = ", name)
 
-	dnameName := name
+	/*dnameName := name
 	for {
 		if dnameName == domain {
 			fmt.Println("Lookup: dnameName == domain")
@@ -138,10 +138,10 @@ func Lookup(server Server, state request.Request) ([]dns.RR, []dns.RR, []dns.RR,
 		if dnameName == "" {
 			break
 		}
-	}
+	}*/
 
 	// Wildcard substitution
-	if eligibleForWildcard(server, domain, name) {
+	/*if eligibleForWildcard(server, domain, name) {
 		// We don't have any records for this name so try again using '*' instead of the actual name
 		wildcardName := replaceWithAsteriskLabel(name)
 		if wildcardName != name {
@@ -173,7 +173,7 @@ func Lookup(server Server, state request.Request) ([]dns.RR, []dns.RR, []dns.RR,
 			}
 			return answerRrs, authorityRrs, additionalRrs, wildcardResult
 		}
-	}
+	}*/
 
 	if qtype == dns.TypeNS {
 		nsRrs, err := server.Query(domain, domain, dns.TypeNS, do)
