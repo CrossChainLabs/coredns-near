@@ -201,7 +201,7 @@ func (n NEAR) handleAAAA(name string, domain string, contentHash []byte) ([]dns.
 func (n NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	fmt.Println("NEAR RPC")
 
-	resp, err := n.Client.FunctionCall("dev-1588039999690", "get_num", "e30=")
+	resp, err := n.Client.FunctionCall("dev-1631189042655-5947204", "get_content_hash", "nns.testnet")
 	var res []int
 
 	if err := json.Unmarshal(resp.Result, &res); err != nil {
@@ -282,20 +282,3 @@ func (n NEAR) obtainTXTRRSet(name string, domain string) ([]byte, error) {
 func (n NEAR) Name() string { return "near" }
 
 func (n NEAR) Ready() bool { return true }
-
-///////////////////////////////////////////////////////////////////////////////////////////////
-/*
-// ServeDNS implements the plugin.Handler interface. This method gets called when near is used
-// in a Server.
-func (n NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
-	fmt.Println("near 1")
-
-	// Call next plugin (if any).
-	return dns.RcodeServerFailure, nil
-}
-
-// Name implements the Handler interface.
-func (n NEAR) Name() string { return "near" }
-
-func (n NEAR) Ready() bool { return true }
-*/
