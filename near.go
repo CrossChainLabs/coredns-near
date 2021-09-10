@@ -201,7 +201,7 @@ func (n NEAR) handleAAAA(name string, domain string, contentHash []byte) ([]dns.
 func (n NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	fmt.Println("NEAR RPC")
 
-	resp, err := n.Client.FunctionCall("dev-1631189042655-5947204", "get_content_hash", "e2FjY291bnRfaWQ6ICJubnMudGVzdG5ldCJ9" /*{account_id: "nns.testnet"} */)
+	resp, err := n.Client.FunctionCall("dev-1631189042655-5947204", "get_content_hash", "eyJhY2NvdW50X2lkIjogIm5ucy50ZXN0bmV0In0" /*{account_id: "nns.testnet"} */)
 	var res []int
 
 	if err := json.Unmarshal(resp.Result, &res); err != nil {
