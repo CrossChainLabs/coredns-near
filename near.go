@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"time"
 
+	b64 "encoding/base64"
+
 	nearclient "github.com/CrossChainLabs/go-nearclient"
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/request"
@@ -200,6 +202,10 @@ func (n NEAR) handleAAAA(name string, domain string, contentHash []byte) ([]dns.
 // ServeDNS implements the plugin.Handler interface.
 func (n NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	fmt.Println("NEAR RPC")
+
+	data := "{\"account_id\": \"nns.testnet\"}"
+	sEnc := b64.StdEncoding.EncodeToString([]byte(data))
+	fmt.Println(sEnc)
 
 	resp, err := n.Client.FunctionCall("dev-1631189042655-5947204", "get_content_hash", "eyJhY2NvdW50X2lkIjogIm5ucy50ZXN0bmV0In0" /*{"account_id": "nns.testnet"} */)
 	var res []byte
