@@ -25,6 +25,7 @@ var emptyContentHash = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x
 type NEAR struct {
 	Next                plugin.Handler
 	Client              *nearclient.Client
+	NEARDNS             string
 	NEARLinkNameServers []string
 	IPFSGatewayAs       []string
 	IPFSGatewayAAAAs    []string
@@ -207,6 +208,8 @@ func (n NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (i
 	sEnc := b64.StdEncoding.EncodeToString([]byte(data))
 	fmt.Println(sEnc)
 
+	fmt.Println(n.NEARDNS)
+
 	resp, err := n.Client.FunctionCall("dev-1631189042655-5947204", "get_content_hash", "eyJhY2NvdW50X2lkIjogIm5ucy50ZXN0bmV0In0" /*{"account_id": "nns.testnet"} */)
 	var res []byte
 
@@ -215,6 +218,10 @@ func (n NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (i
 	}
 
 	fmt.Println("near result:", res, "logs:", resp.Logs, "err:", err)
+
+	res_enc := string(res)
+	sDec, _ := b64.StdEncoding.DecodeString(res_enc)
+	fmt.Println(string(sDec))
 
 	state := request.Request{W: w, Req: r}
 	//fmt.Println("state: %+v", state)

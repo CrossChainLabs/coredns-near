@@ -9,6 +9,9 @@
     # connection is ta URL to an NEAR RPC. 
     connection https://rpc.testnet.near.org
 
+    # NEAR DNS smart contract. 
+    neardns dev-1631189042655-5947204
+
     # nearlinknameservers are the names of the nameservers that serve
     # NEARLink domains.  This will usually be the name of this server,
     # plus potentially one or more others.
