@@ -99,7 +99,6 @@ func Lookup(server Server, state request.Request) ([]dns.RR, []dns.RR, []dns.RR,
 	dnameName := name
 	for {
 		if dnameName == domain {
-			fmt.Println("Lookup: dnameName == domain")
 			break
 		}
 		dnameRrs, err := server.Query(domain, dnameName, dns.TypeDNAME, do)
