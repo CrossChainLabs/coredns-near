@@ -290,6 +290,8 @@ func (n NEAR) obtainContentHash(name string, domain string) ([]byte, error) {
 	}
 
 	dec := string(byte_result)
+	dec = strings.TrimPrefix(dec, "\"")
+	dec = strings.TrimSuffix(dec, "\"")
 
 	fmt.Println("dec result: ", dec)
 
