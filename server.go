@@ -81,8 +81,6 @@ func Lookup(server Server, state request.Request) ([]dns.RR, []dns.RR, []dns.RR,
 	authorityRrs := make([]dns.RR, 0)
 	additionalRrs := make([]dns.RR, 0)
 
-	fmt.Println("Lookup: qtype = ", qtype)
-
 	// Work out the domain against which to query
 	name := strings.ToLower(state.Name())
 	if !strings.HasSuffix(name, ".") {
@@ -97,9 +95,8 @@ func Lookup(server Server, state request.Request) ([]dns.RR, []dns.RR, []dns.RR,
 
 	// Look up parents of this name up to the domain to see if there are
 	// any DNAME records. If so we take the first matching
-	fmt.Println("Lookup: name = ", name)
 
-	/*dnameName := name
+	dnameName := name
 	for {
 		if dnameName == domain {
 			fmt.Println("Lookup: dnameName == domain")
@@ -138,10 +135,10 @@ func Lookup(server Server, state request.Request) ([]dns.RR, []dns.RR, []dns.RR,
 		if dnameName == "" {
 			break
 		}
-	}*/
+	}
 
 	// Wildcard substitution
-	/*if eligibleForWildcard(server, domain, name) {
+	if eligibleForWildcard(server, domain, name) {
 		// We don't have any records for this name so try again using '*' instead of the actual name
 		wildcardName := replaceWithAsteriskLabel(name)
 		if wildcardName != name {
@@ -173,7 +170,7 @@ func Lookup(server Server, state request.Request) ([]dns.RR, []dns.RR, []dns.RR,
 			}
 			return answerRrs, authorityRrs, additionalRrs, wildcardResult
 		}
-	}*/
+	}
 
 	if qtype == dns.TypeNS {
 		nsRrs, err := server.Query(domain, domain, dns.TypeNS, do)
@@ -202,7 +199,7 @@ func Lookup(server Server, state request.Request) ([]dns.RR, []dns.RR, []dns.RR,
 
 	// If we aren't asking for a CNAME then check for one to see if we need
 	// to recurse
-	/*if qtype != dns.TypeCNAME {
+	if qtype != dns.TypeCNAME {
 		cnameRrs, err := server.Query(domain, name, dns.TypeCNAME, do)
 		if err != nil {
 			return nil, nil, nil, ServerFailure
@@ -225,7 +222,8 @@ func Lookup(server Server, state request.Request) ([]dns.RR, []dns.RR, []dns.RR,
 			}
 			return answerRrs, authorityRrs, additionalRrs, cnameResult
 		}
-	}*/
+	}
+
 	// Fetch actual answer record(s)
 	rrs, err := server.Query(domain, name, qtype, do)
 	if err != nil {
@@ -237,10 +235,6 @@ func Lookup(server Server, state request.Request) ([]dns.RR, []dns.RR, []dns.RR,
 	answerRrs = append(answerRrs, rrs...)
 	if len(answerRrs) == 0 {
 		return answerRrs, authorityRrs, additionalRrs, NoData
-	}
-
-	if qtype == dns.TypeMX || qtype == dns.TypeSRV {
-		// Add A and AAAA records to the answers provided where we can?
 	}
 
 	return answerRrs, authorityRrs, additionalRrs, Success

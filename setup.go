@@ -1,7 +1,6 @@
 package near
 
 import (
-	"fmt"
 	"strings"
 
 	nearclient "github.com/CrossChainLabs/go-nearclient"
@@ -17,12 +16,6 @@ func init() { plugin.Register("near", setup) }
 // for parsing any extra options the near plugin may have.
 func setup(c *caddy.Controller) error {
 	connection, nearDns, nearLinkNameServers, ipfsGatewayAs, ipfsGatewayAAAAs, err := nearParse(c)
-
-	fmt.Println("connection", connection)
-	fmt.Println("nearDns", nearDns)
-	fmt.Println("nearLinkNameServers", nearLinkNameServers)
-	fmt.Println("ipfsGatewayAs", ipfsGatewayAs)
-	fmt.Println("ipfsGatewayAAAAs", ipfsGatewayAAAAs)
 
 	if err != nil {
 		return plugin.Error("near", err)
@@ -40,19 +33,6 @@ func setup(c *caddy.Controller) error {
 			IPFSGatewayAAAAs:    ipfsGatewayAAAAs,
 		}
 	})
-
-	/*c.Next() // Ignore "near" and give us the next token.
-	if c.NextArg() {
-		// If there was another token, return an error, because we don't have any configuration.
-		// Any errors returned from this setup function should be wrapped with plugin.Error, so we
-		// can present a slightly nicer error message to the user.
-		return plugin.Error("near", c.ArgErr())
-	}
-
-	// Add the Plugin to CoreDNS, so Servers can use it in their plugin chain.
-	dnsserver.GetConfig(c).AddPlugin(func(next plugin.Handler) plugin.Handler {
-		return NEAR{Next: next}
-	})*/
 
 	// All OK, return a nil error.
 	return nil
