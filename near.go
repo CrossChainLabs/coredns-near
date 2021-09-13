@@ -205,23 +205,19 @@ func (n NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (i
 	fmt.Println("NEAR RPC")
 
 	data := "{\"account_id\": \"nns.testnet\"}"
-	sEnc := b64.StdEncoding.EncodeToString([]byte(data))
-	fmt.Println(sEnc)
+	paramsEnc := b64.StdEncoding.EncodeToString([]byte(data))
 
-	fmt.Println(n.NEARDNS)
+	resp, err := n.Client.FunctionCall(n.NEARDNS, "get_content_hash", paramsEnc)
+	var byte_result []byte
 
-	resp, err := n.Client.FunctionCall("dev-1631189042655-5947204", "get_content_hash", "eyJhY2NvdW50X2lkIjogIm5ucy50ZXN0bmV0In0" /*{"account_id": "nns.testnet"} */)
-	var res []byte
-
-	if err := json.Unmarshal(resp.Result, &res); err != nil {
+	if err := json.Unmarshal(resp.Result, &byte_result); err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Println("near result:", res, "logs:", resp.Logs, "err:", err)
+	s := string(byte_result)
+	fmt.Println(s)
 
-	res_enc := string(res)
-	sDec, _ := b64.StdEncoding.DecodeString(res_enc)
-	fmt.Println(string(sDec))
+	fmt.Println("near result:", resp.Result, "logs:", resp.Logs, "err:", err)
 
 	state := request.Request{W: w, Req: r}
 	//fmt.Println("state: %+v", state)
