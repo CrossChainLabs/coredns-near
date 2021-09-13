@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	b64 "encoding/base64"
@@ -202,22 +203,22 @@ func (n NEAR) handleAAAA(name string, domain string, contentHash []byte) ([]dns.
 
 // ServeDNS implements the plugin.Handler interface.
 func (n NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
-	fmt.Println("NEAR RPC")
-
 	data := "{\"account_id\": \"nns.testnet\"}"
 	paramsEnc := b64.StdEncoding.EncodeToString([]byte(data))
 
 	resp, err := n.Client.FunctionCall(n.NEARDNS, "get_content_hash", paramsEnc)
+	if err != nil {
+		log.Error(err)
+	}
+
 	var byte_result []byte
 
 	if err := json.Unmarshal(resp.Result, &byte_result); err != nil {
-		fmt.Println(err)
+		log.Error(err)
 	}
 
 	s := string(byte_result)
 	fmt.Println(s)
-
-	fmt.Println("near result:", resp.Result, "logs:", resp.Logs, "err:", err)
 
 	state := request.Request{W: w, Req: r}
 	//fmt.Println("state: %+v", state)
@@ -268,15 +269,31 @@ func (n NEAR) obtainAAAARRSet(name string, domain string) ([]byte, error) {
 }
 
 func (n NEAR) obtainContentHash(name string, domain string) ([]byte, error) {
-	//nearDomain := strings.TrimSuffix(domain, ".")
+	nearDomain := strings.TrimSuffix(domain, ".near.")
 
-	s := "QmTYkmEguKK6KXX3tJ9HEAMdPYX4baDucBQTzSMqFeh1aH"
+	params := "{\"account_id\": \"" + nearDomain + "\"}"
+	paramsEnc := b64.StdEncoding.EncodeToString([]byte(params))
 
-	return []byte(s), nil
+	fmt.Println("params: ", params)
 
-	//return n.getContentHash(name)
+	resp, err := n.Client.FunctionCall(n.NEARDNS, "get_content_hash", paramsEnc)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
 
-	//return []byte{}, nil
+	var byte_result []byte
+
+	if err := json.Unmarshal(resp.Result, &byte_result); err != nil {
+		log.Error(err)
+		return nil, err
+	}
+
+	dec := string(byte_result)
+
+	fmt.Println("dec result: ", dec)
+
+	return []byte(dec), nil
 }
 
 func (n NEAR) obtainTXTRRSet(name string, domain string) ([]byte, error) {
