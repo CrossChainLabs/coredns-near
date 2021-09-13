@@ -1,6 +1,3 @@
-// Package near is a CoreDNS plugin that prints "near" to stdout on every packet received.
-//
-// It serves as an near CoreDNS plugin with numerous code comments.
 package near
 
 import (
@@ -22,7 +19,6 @@ import (
 
 var emptyContentHash = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 
-// NEAR is an near plugin to show how to write a plugin.
 type NEAR struct {
 	Next                plugin.Handler
 	Client              *nearclient.Client
@@ -32,25 +28,15 @@ type NEAR struct {
 	IPFSGatewayAAAAs    []string
 }
 
-// IsAuthoritative checks if the NEAR plugin is authoritative for a given domain
 func (n NEAR) IsAuthoritative(domain string) bool {
-	// TODO : check if is near.link
-
 	return true
 }
 
-// HasRecords checks if there are any records for a specific domain and name.
-// This is used for wildcard eligibility
 func (n NEAR) HasRecords(domain string, name string) (bool, error) {
-	// TODO
-
 	return true, nil
 }
 
-// Query queries a given domain/name/resource combination
 func (n NEAR) Query(domain string, name string, qtype uint16, do bool) ([]dns.RR, error) {
-	fmt.Println("Query: request type, name, domain:", qtype, name, domain)
-
 	results := make([]dns.RR, 0)
 
 	var contentHash []byte
@@ -132,17 +118,6 @@ func (n NEAR) handleTXT(name string, domain string, contentHash []byte) ([]dns.R
 	}
 	results = append(results, result)
 
-	// Also provide dnslink for compatibility with older IPFS gateways
-	/*contentHashStr, err := ens.ContenthashToString(contentHash)
-	if err != nil {
-		return results, err
-	}
-	result, err = dns.NewRR(fmt.Sprintf("%s 3600 IN TXT \"dnslink=%s\"", name, contentHashStr))
-	if err != nil {
-		return results, nil
-	}
-	results = append(results, result)*/
-
 	return results, nil
 }
 
@@ -203,26 +178,7 @@ func (n NEAR) handleAAAA(name string, domain string, contentHash []byte) ([]dns.
 
 // ServeDNS implements the plugin.Handler interface.
 func (n NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
-	data := "{\"account_id\": \"nns.testnet\"}"
-	paramsEnc := b64.StdEncoding.EncodeToString([]byte(data))
-
-	resp, err := n.Client.FunctionCall(n.NEARDNS, "get_content_hash", paramsEnc)
-	if err != nil {
-		log.Error(err)
-	}
-
-	var byte_result []byte
-
-	if err := json.Unmarshal(resp.Result, &byte_result); err != nil {
-		log.Error(err)
-	}
-
-	s := string(byte_result)
-	fmt.Println(s)
-
 	state := request.Request{W: w, Req: r}
-	//fmt.Println("state: %+v", state)
-	fmt.Println("domain: ", state.Name())
 
 	a := new(dns.Msg)
 	a.SetReply(r)
@@ -253,28 +209,59 @@ func (n NEAR) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (i
 }
 
 func (n NEAR) obtainARRSet(name string, domain string) ([]byte, error) {
-	//nearDomain := strings.TrimSuffix(domain, ".")
+	nearDomain := strings.TrimSuffix(domain, ".near.")
+	params := "{\"account_id\": \"" + nearDomain + "\"}"
+	paramsEnc := b64.StdEncoding.EncodeToString([]byte(params))
 
-	//return n.getA(name)
+	resp, err := n.Client.FunctionCall(n.NEARDNS, "get_a", paramsEnc)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
 
-	return []byte{}, nil
+	var byte_result []byte
+
+	if err := json.Unmarshal(resp.Result, &byte_result); err != nil {
+		log.Error(err)
+		return nil, err
+	}
+
+	dec := string(byte_result)
+	dec = strings.TrimPrefix(dec, "\"")
+	dec = strings.TrimSuffix(dec, "\"")
+
+	return []byte(dec), nil
 }
 
 func (n NEAR) obtainAAAARRSet(name string, domain string) ([]byte, error) {
-	//nearDomain := strings.TrimSuffix(domain, ".")
+	nearDomain := strings.TrimSuffix(domain, ".near.")
+	params := "{\"account_id\": \"" + nearDomain + "\"}"
+	paramsEnc := b64.StdEncoding.EncodeToString([]byte(params))
 
-	//return n.getAAAA(name)
+	resp, err := n.Client.FunctionCall(n.NEARDNS, "get_aaaa", paramsEnc)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
 
-	return []byte{}, nil
+	var byte_result []byte
+
+	if err := json.Unmarshal(resp.Result, &byte_result); err != nil {
+		log.Error(err)
+		return nil, err
+	}
+
+	dec := string(byte_result)
+	dec = strings.TrimPrefix(dec, "\"")
+	dec = strings.TrimSuffix(dec, "\"")
+
+	return []byte(dec), nil
 }
 
 func (n NEAR) obtainContentHash(name string, domain string) ([]byte, error) {
 	nearDomain := strings.TrimSuffix(domain, ".near.")
-
 	params := "{\"account_id\": \"" + nearDomain + "\"}"
 	paramsEnc := b64.StdEncoding.EncodeToString([]byte(params))
-
-	fmt.Println("params: ", params)
 
 	resp, err := n.Client.FunctionCall(n.NEARDNS, "get_content_hash", paramsEnc)
 	if err != nil {
@@ -293,17 +280,32 @@ func (n NEAR) obtainContentHash(name string, domain string) ([]byte, error) {
 	dec = strings.TrimPrefix(dec, "\"")
 	dec = strings.TrimSuffix(dec, "\"")
 
-	fmt.Println("dec result: ", dec)
-
 	return []byte(dec), nil
 }
 
 func (n NEAR) obtainTXTRRSet(name string, domain string) ([]byte, error) {
-	//nearDomain := strings.TrimSuffix(domain, ".")
+	nearDomain := strings.TrimSuffix(domain, ".near.")
+	params := "{\"account_id\": \"" + nearDomain + "\"}"
+	paramsEnc := b64.StdEncoding.EncodeToString([]byte(params))
 
-	//return n.getTXT(name)
+	resp, err := n.Client.FunctionCall(n.NEARDNS, "get_txt", paramsEnc)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
 
-	return []byte{}, nil
+	var byte_result []byte
+
+	if err := json.Unmarshal(resp.Result, &byte_result); err != nil {
+		log.Error(err)
+		return nil, err
+	}
+
+	dec := string(byte_result)
+	dec = strings.TrimPrefix(dec, "\"")
+	dec = strings.TrimSuffix(dec, "\"")
+
+	return []byte(dec), nil
 }
 
 // Name implements the Handler interface.
