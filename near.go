@@ -10,7 +10,7 @@ import (
 
 	b64 "encoding/base64"
 
-	nearclient "github.com/CrossChainLabs/go-nearclient"
+	nearclient "github.com/CrossChainLabs/near-api-go"
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/request"
 	"github.com/labstack/gommon/log"

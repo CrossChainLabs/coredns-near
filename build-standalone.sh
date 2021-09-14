@@ -7,7 +7,7 @@ BUILDDIR=`pwd`/build
 mkdir -p ${BUILDDIR} 2>/dev/null
 cd ${BUILDDIR}
 echo "Cloning coredns repo..."
-export GOPRIVATE=github.com/CrossChainLabs/coredns-simple
+export GOPRIVATE=github.com/CrossChainLabs/coredns-near
 git clone https://github.com/coredns/coredns.git
 
 cd coredns
@@ -20,7 +20,7 @@ echo "Patching plugin config..."
 ed plugin.cfg <<EOED
 /rewrite:rewrite
 a
-near:github.com/CrossChainLabs/coredns-simple
+near:github.com/CrossChainLabs/coredns-near
 .
 w
 q

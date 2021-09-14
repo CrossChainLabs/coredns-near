@@ -3,7 +3,7 @@ package near
 import (
 	"strings"
 
-	nearclient "github.com/CrossChainLabs/go-nearclient"
+	nearclient "github.com/CrossChainLabs/near-api-go"
 	"github.com/coredns/caddy"
 	"github.com/coredns/coredns/core/dnsserver"
 	"github.com/coredns/coredns/plugin"
