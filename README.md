@@ -15,5 +15,5 @@ ex: testaccount.near.link
 ## Run
 
 ``` sh
-./coredns  -dns.port 1053
+./coredns -dns.port 1053
 ```
