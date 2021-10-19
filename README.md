@@ -11,3 +11,9 @@ ex: testaccount.near.link
 ``` sh
 ./build-standalone.sh
 ```
+
+## Run
+
+``` sh
+./coredns  -dns.port 1053
+```
