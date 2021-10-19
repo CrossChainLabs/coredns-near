@@ -7,11 +7,12 @@ BUILDDIR=`pwd`/build
 mkdir -p ${BUILDDIR} 2>/dev/null
 cd ${BUILDDIR}
 echo "Cloning coredns repo..."
-export GOPRIVATE=github.com/CrossChainLabs/coredns-near
 git clone https://github.com/coredns/coredns.git
 
 cd coredns
 git checkout v1.8.3
+
+go get github.com/CrossChainLabs/coredns-near
 
 echo "Building..."
 make
